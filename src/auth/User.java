@@ -2,6 +2,7 @@ package auth;
 
 import com.opencsv.CSVWriter;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -49,5 +50,18 @@ public class User {
 
     public static String login(String email, String password) {
         return "Brabo";
+    }
+
+    public static void writeCsvHeader() {
+        File file = new File(FILE_NAME);
+        if (!file.exists() || file.length() == 0) {
+            try (CSVWriter writer = new CSVWriter(new FileWriter(FILE_NAME, true))) {
+                String[] header = {"ID", "Name", "Email", "Password", "Document"};
+                writer.writeNext(header);
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Erro ao criar o cabeçalho do arquivo CSV.");
+            }
+        }
     }
 }

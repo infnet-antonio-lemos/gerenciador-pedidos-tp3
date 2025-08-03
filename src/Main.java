@@ -3,6 +3,7 @@ import auth.User;
 
 public class Main {
     public static void main(String[] args) {
+        User.writeCsvHeader();
         mainMenu();
     }
 
