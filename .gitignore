@@ -1,9 +1,11 @@
+users.csv
+
 ### IntelliJ IDEA ###
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 your-artifact-id.iml
-users.csv
+gerenciador-pedidos.iml
 
 ### Eclipse ###
 .apt_generated
