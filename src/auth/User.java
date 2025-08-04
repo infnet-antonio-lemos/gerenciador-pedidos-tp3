@@ -2,6 +2,7 @@ package auth;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.File;
 import java.io.FileReader;
@@ -9,13 +10,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class User {
-    private int id;
-    private String name;
-    private String email;
-    private String password;
-    private String document;
+    private final int id;
+    private final String name;
+    private final String email;
+    private final String password;
+    private final String document;
 
     public static final String FILE_NAME = "users.csv";
     private User(int id, String name, String email, String password, String document) {
@@ -28,12 +31,16 @@ public class User {
 
     public static User createUser(String name, String email, String password, String confirmPassword, String document) throws Exception {
         int randomId = (int) (Math.random() * 10000);
+        if (!password.equals(confirmPassword)) {
+            throw new Exception("As senhas não coincidem.");
+        }
         User user = new User(randomId, name, email, password, document);
 
         FileWriter fileWriter;
         try {
             fileWriter = new FileWriter(FILE_NAME, true);
         } catch (IOException e) {
+            logger.log(Level.SEVERE, "Erro ao criar o arquivo de usuários.", e);
             throw new Exception("Falha ao criar o arquivo de usuários.");
         }
         try (CSVWriter writer = new CSVWriter(fileWriter)) {
@@ -46,6 +53,7 @@ public class User {
             };
             writer.writeNext(line);
         } catch (IOException e) {
+            logger.log(Level.SEVERE, "Erro ao escrever no arquivo de usuários.", e);
             throw new Exception("Falha ao escrever no arquivo de usuários.");
         }
         return user;
@@ -60,8 +68,12 @@ public class User {
                 }
             }
             throw new Exception("Email ou senha incorretos.");
-        } catch (Exception e) {
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Erro ao ler o arquivo de usuários.", e);
             throw new Exception("Erro ao ler o arquivo de usuários.");
+        } catch (CsvValidationException e) {
+            logger.log(Level.SEVERE, "Erro ao validar o CSV de usuários.", e);
+            throw new Exception("Erro ao validar o CSV de usuários.");
         }
     }
 
@@ -72,12 +84,13 @@ public class User {
                 String[] header = {"ID", "Name", "Email", "Password", "Document"};
                 writer.writeNext(header);
             } catch (IOException e) {
+                logger.log(Level.SEVERE, "Erro ao criar o cabeçalho do arquivo CSV.", e);
                 System.out.println("Erro ao criar o cabeçalho do arquivo CSV.");
             }
         }
     }
 
-    private static User[] readUsersFromCsv() throws Exception {
+    private static User[] readUsersFromCsv() throws IOException, CsvValidationException {
         List<User> users = new ArrayList<>();
         try (CSVReader reader = new CSVReader(new FileReader(FILE_NAME))) {
             String[] nextLine;
@@ -98,8 +111,6 @@ public class User {
                 );
                 users.add(user);
             }
-        } catch (IOException e) {
-            throw new Exception("Erro ao ler o arquivo de usuários.");
         }
         return users.toArray(new User[0]);
     }
@@ -108,4 +119,6 @@ public class User {
     public String toString() {
         return String.format("User{id=%d, name='%s', email='%s', document='%s'}", id, name, email, document);
     }
+
+    private static final Logger logger = Logger.getLogger(User.class.getName());
 }

@@ -30,13 +30,16 @@ public class Main {
                     String document = scanner.next();
 
                     try {
-                    User.createUser(name, email, password, confirmPassword, document);
+                        User user = User.createUser(name, email, password, confirmPassword, document);
+
+                        System.out.println("Usuário criado com sucesso!");
+                        System.out.println(user);
+                        break;
                     } catch (Exception e) {
                         System.out.println("Erro ao criar usuário: " + e.getMessage());
                         continue;
                     }
-                    System.out.println("Usuário criado com sucesso!");
-                    break;
+
                 case 2:
                     System.out.print("Digite o email: ");
                     String loginEmail = scanner.next();
