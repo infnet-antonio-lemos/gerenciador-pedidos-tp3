@@ -1,13 +1,19 @@
 import java.util.Scanner;
-import auth.User;
+
+import business.UserBusiness;
+import controller.UserController;
+import entity.User;
+import repository.UserRepository;
 
 public class Main {
     public static void main(String[] args) {
-        User.writeCsvHeader();
-        mainMenu();
+        UserRepository userRepository = new UserRepository();
+        UserBusiness userBusiness = new UserBusiness(userRepository);
+        UserController userController = new UserController(userBusiness);
+        mainMenu(userController);
     }
 
-    public static void mainMenu() {
+    public static void mainMenu(UserController userController) {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("1. Criar usuário");
@@ -15,39 +21,38 @@ public class Main {
             System.out.println("3. Sair");
             System.out.print("Escolha uma opção: ");
             int choice = scanner.nextInt();
+            scanner.nextLine(); // consume newline
 
             switch (choice) {
                 case 1:
                     System.out.print("Digite o nome: ");
-                    String name = scanner.next();
+                    String name = scanner.nextLine();
                     System.out.print("Digite o email: ");
-                    String email = scanner.next();
+                    String email = scanner.nextLine();
                     System.out.print("Digite a senha: ");
-                    String password = scanner.next();
+                    String password = scanner.nextLine();
                     System.out.print("Confirme a senha: ");
-                    String confirmPassword = scanner.next();
+                    String confirmPassword = scanner.nextLine();
                     System.out.print("Digite o documento: ");
-                    String document = scanner.next();
+                    String document = scanner.nextLine();
 
                     try {
-                        User user = User.createUser(name, email, password, confirmPassword, document);
-
+                        User user = userController.createUser(name, email, password, confirmPassword, document);
                         System.out.println("Usuário criado com sucesso!");
-                        System.out.println(user);
+                        System.out.println("ID: " + user.getId() + ", Nome: " + user.getName() + ", Email: " + user.getEmail() + ", Documento: " + user.getDocument());
                         break;
                     } catch (Exception e) {
                         System.out.println("Erro ao criar usuário: " + e.getMessage());
                         continue;
                     }
-
                 case 2:
                     System.out.print("Digite o email: ");
-                    String loginEmail = scanner.next();
+                    String loginEmail = scanner.nextLine();
                     System.out.print("Digite a senha: ");
-                    String loginPassword = scanner.next();
+                    String loginPassword = scanner.nextLine();
 
                     try {
-                        User user = User.login(loginEmail, loginPassword);
+                        User user = userController.login(loginEmail, loginPassword);
                         System.out.println("Login realizado com sucesso!");
                         authenticatedMenu(user);
                         break;
@@ -72,10 +77,11 @@ public class Main {
             System.out.println("3. Sair");
             System.out.println("Escolha uma opção: ");
             int choice = scanner.nextInt();
+            scanner.nextLine(); // consume newline
             switch (choice) {
                 case 1:
                     System.out.println("Perfil do usuário:");
-                    System.out.println(user);
+                    System.out.println("ID: " + user.getId() + ", Nome: " + user.getName() + ", Email: " + user.getEmail() + ", Documento: " + user.getDocument());
                     break;
                 case 2:
                     System.out.println("Ops! Esta funcionalidade ainda não está implementada.");
