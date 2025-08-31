@@ -1,19 +1,19 @@
 import java.util.Scanner;
 
-import business.UserBusiness;
-import controller.UserController;
+import business.AuthBusiness;
+import controller.AuthController;
 import entity.User;
 import repository.UserRepository;
 
 public class Main {
     public static void main(String[] args) {
         UserRepository userRepository = new UserRepository();
-        UserBusiness userBusiness = new UserBusiness(userRepository);
-        UserController userController = new UserController(userBusiness);
-        mainMenu(userController);
+        AuthBusiness authBusiness = new AuthBusiness(userRepository);
+        AuthController authController = new AuthController(authBusiness);
+        mainMenu(authController);
     }
 
-    public static void mainMenu(UserController userController) {
+    public static void mainMenu(AuthController authController) {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("1. Criar usuário");
@@ -37,7 +37,7 @@ public class Main {
                     String document = scanner.nextLine();
 
                     try {
-                        User user = userController.createUser(name, email, password, confirmPassword, document);
+                        User user = authController.createUser(name, email, password, confirmPassword, document);
                         System.out.println("Usuário criado com sucesso!");
                         System.out.println("ID: " + user.getId() + ", Nome: " + user.getName() + ", Email: " + user.getEmail() + ", Documento: " + user.getDocument());
                         break;
@@ -52,7 +52,7 @@ public class Main {
                     String loginPassword = scanner.nextLine();
 
                     try {
-                        User user = userController.login(loginEmail, loginPassword);
+                        User user = authController.login(loginEmail, loginPassword);
                         System.out.println("Login realizado com sucesso!");
                         authenticatedMenu(user);
                         break;

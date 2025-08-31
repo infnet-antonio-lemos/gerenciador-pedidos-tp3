@@ -3,10 +3,10 @@ package business;
 import entity.User;
 import repository.UserRepository;
 
-public class UserBusiness {
+public class AuthBusiness {
     private UserRepository userRepository;
 
-    public UserBusiness(UserRepository userRepository) {
+    public AuthBusiness(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
