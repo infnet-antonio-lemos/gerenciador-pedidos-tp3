@@ -1,5 +1,4 @@
 import io.javalin.Javalin;
-import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class Main {
     public static void main(String[] args) {

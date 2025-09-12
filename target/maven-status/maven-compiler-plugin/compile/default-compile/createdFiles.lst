@@ -1,0 +1,6 @@
+controller/AuthController.class
+Main.class
+entity/User.class
+repository/UserRepository.class
+business/AuthBusiness.class
+CLI.class
