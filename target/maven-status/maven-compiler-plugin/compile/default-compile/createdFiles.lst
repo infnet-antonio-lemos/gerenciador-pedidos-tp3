@@ -1,6 +1,9 @@
 controller/AuthController.class
 Main.class
-entity/User.class
 repository/UserRepository.class
-business/AuthBusiness.class
 CLI.class
+controller/AuthHttpController.class
+entity/User.class
+controller/AuthHttpController$UserResponse.class
+controller/AuthHttpController$ErrorResponse.class
+business/AuthBusiness.class
