@@ -1,9 +1,12 @@
 controller/AuthController.class
 Main.class
+controller/AuthHttpController$LoginResponse.class
 repository/UserRepository.class
 CLI.class
 controller/AuthHttpController.class
+controller/AuthHttpController$MessageResponse.class
 entity/User.class
+auth/SimpleTokenManager.class
 controller/AuthHttpController$UserResponse.class
 controller/AuthHttpController$ErrorResponse.class
 business/AuthBusiness.class

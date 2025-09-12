@@ -4,4 +4,5 @@
 /home/antoniolemos/infnet/gerenciador-pedidos/gerenciador-pedidos/src/main/java/controller/AuthController.java
 /home/antoniolemos/infnet/gerenciador-pedidos/gerenciador-pedidos/src/main/java/controller/AuthHttpController.java
 /home/antoniolemos/infnet/gerenciador-pedidos/gerenciador-pedidos/src/main/java/CLI.java
+/home/antoniolemos/infnet/gerenciador-pedidos/gerenciador-pedidos/src/main/java/auth/SimpleTokenManager.java
 /home/antoniolemos/infnet/gerenciador-pedidos/gerenciador-pedidos/src/main/java/entity/User.java
