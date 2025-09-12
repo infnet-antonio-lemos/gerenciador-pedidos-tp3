@@ -19,6 +19,29 @@ public class AuthHttpController {
     public void createUser(Context ctx) {
         try {
             JsonNode json = objectMapper.readTree(ctx.body());
+
+            // Validate required fields exist
+            if (json.get("name") == null) {
+                ctx.status(400).json(new ErrorResponse("Campo 'name' é obrigatório"));
+                return;
+            }
+            if (json.get("email") == null) {
+                ctx.status(400).json(new ErrorResponse("Campo 'email' é obrigatório"));
+                return;
+            }
+            if (json.get("password") == null) {
+                ctx.status(400).json(new ErrorResponse("Campo 'password' é obrigatório"));
+                return;
+            }
+            if (json.get("confirmPassword") == null) {
+                ctx.status(400).json(new ErrorResponse("Campo 'confirmPassword' é obrigatório"));
+                return;
+            }
+            if (json.get("document") == null) {
+                ctx.status(400).json(new ErrorResponse("Campo 'document' é obrigatório"));
+                return;
+            }
+
             String name = json.get("name").asText();
             String email = json.get("email").asText();
             String password = json.get("password").asText();
@@ -37,6 +60,17 @@ public class AuthHttpController {
     public void login(Context ctx) {
         try {
             JsonNode json = objectMapper.readTree(ctx.body());
+
+            // Validate required fields exist
+            if (json.get("email") == null) {
+                ctx.status(400).json(new ErrorResponse("Campo 'email' é obrigatório"));
+                return;
+            }
+            if (json.get("password") == null) {
+                ctx.status(400).json(new ErrorResponse("Campo 'password' é obrigatório"));
+                return;
+            }
+
             String email = json.get("email").asText();
             String password = json.get("password").asText();
 
@@ -87,25 +121,6 @@ public class AuthHttpController {
         } catch (Exception e) {
             ctx.status(404).json(new ErrorResponse(e.getMessage()));
         }
-    }
-
-    // Authentication middleware helper
-    public static void requireAuth(Context ctx) throws Exception {
-        String authHeader = ctx.header("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            ctx.status(401).json(new ErrorResponse("Token de autenticação obrigatório"));
-            return;
-        }
-
-        String token = authHeader.substring(7); // Remove "Bearer " prefix
-        if (!SimpleTokenManager.isValidToken(token)) {
-            ctx.status(401).json(new ErrorResponse("Token inválido ou expirado"));
-            return;
-        }
-
-        // Store user ID in context for use in handlers
-        Integer userId = SimpleTokenManager.getUserIdFromToken(token);
-        ctx.attribute("userId", userId);
     }
 
     // Response classes
