@@ -5,7 +5,7 @@ import controller.AuthController;
 import entity.User;
 import repository.UserRepository;
 
-public class Main {
+public class CLI {
     public static void main(String[] args) {
         UserRepository userRepository = new UserRepository();
         AuthBusiness authBusiness = new AuthBusiness(userRepository);
