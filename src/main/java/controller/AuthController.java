@@ -17,18 +17,8 @@ public class AuthController {
     public User login(String email, String password) throws Exception {
         return authBusiness.login(email, password);
     }
+
+    public User getUserById(int id) throws Exception {
+        return authBusiness.getUserById(id);
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

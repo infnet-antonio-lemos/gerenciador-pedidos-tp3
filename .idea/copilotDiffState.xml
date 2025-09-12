@@ -12,6 +12,15 @@
             </PendingDiffInfo>
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/src/main/java/controller/AuthController.java">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/src/main/java/controller/AuthController.java" />
+              <option name="originalContent" value="package controller;&#10;&#10;import business.AuthBusiness;&#10;import entity.User;&#10;&#10;public class AuthController {&#10;    private AuthBusiness authBusiness;&#10;&#10;    public AuthController(AuthBusiness authBusiness) {&#10;        this.authBusiness = authBusiness;&#10;    }&#10;&#10;    public User createUser(String name, String email, String password, String confirmPassword, String document) throws Exception {&#10;        return authBusiness.createUser(name, email, password, confirmPassword, document);&#10;    }&#10;&#10;    public User login(String email, String password) throws Exception {&#10;        return authBusiness.login(email, password);&#10;    }&#10;}&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;" />
+              <option name="updatedContent" value="package controller;&#10;&#10;import business.AuthBusiness;&#10;import entity.User;&#10;&#10;public class AuthController {&#10;    private AuthBusiness authBusiness;&#10;&#10;    public AuthController(AuthBusiness authBusiness) {&#10;        this.authBusiness = authBusiness;&#10;    }&#10;&#10;    public User createUser(String name, String email, String password, String confirmPassword, String document) throws Exception {&#10;        return authBusiness.createUser(name, email, password, confirmPassword, document);&#10;    }&#10;&#10;    public User login(String email, String password) throws Exception {&#10;        return authBusiness.login(email, password);&#10;    }&#10;&#10;    public User getUserById(int id) throws Exception {&#10;        return authBusiness.getUserById(id);&#10;    }&#10;}" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/src/model/User.java">
           <value>
             <PendingDiffInfo>

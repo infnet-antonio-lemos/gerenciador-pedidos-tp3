@@ -27,8 +27,7 @@ public class Main {
         // Protected routes (authentication required)
         app.get("/profile", ctx -> {
             AuthHttpController.requireAuth(ctx);
-            Integer userId = ctx.attribute("userId");
-            ctx.json("{\"message\": \"This is your protected profile\", \"userId\": " + userId + "}");
+            authHttpController.getProfile(ctx);
         });
 
         app.get("/protected", ctx -> {

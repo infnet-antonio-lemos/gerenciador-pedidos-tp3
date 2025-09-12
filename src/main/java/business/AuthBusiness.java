@@ -29,4 +29,10 @@ public class AuthBusiness {
         if (!user.getPassword().equals(password)) throw new Exception("Email ou senha incorretos");
         return user;
     }
+
+    public User getUserById(int id) throws Exception {
+        User user = userRepository.findById(id);
+        if (user == null) throw new Exception("Usuário não encontrado");
+        return user;
+    }
 }

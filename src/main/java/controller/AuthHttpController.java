@@ -71,6 +71,24 @@ public class AuthHttpController {
         }
     }
 
+    public void getProfile(Context ctx) {
+        try {
+            // Authentication is handled by middleware, get userId from context
+            Integer userId = ctx.attribute("userId");
+            if (userId == null) {
+                ctx.status(401).json(new ErrorResponse("Usuário não autenticado"));
+                return;
+            }
+
+            User user = authBusiness.getUserById(userId);
+
+            // Return user profile without password for security
+            ctx.status(200).json(new UserResponse(user.getId(), user.getName(), user.getEmail(), user.getDocument()));
+        } catch (Exception e) {
+            ctx.status(404).json(new ErrorResponse(e.getMessage()));
+        }
+    }
+
     // Authentication middleware helper
     public static void requireAuth(Context ctx) throws Exception {
         String authHeader = ctx.header("Authorization");

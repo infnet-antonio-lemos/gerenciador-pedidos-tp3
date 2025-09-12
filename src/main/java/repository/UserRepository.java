@@ -59,6 +59,13 @@ public class UserRepository {
         return null;
     }
 
+    public User findById(int id) throws IOException {
+        for (User user : findAll()) {
+            if (user.getId() == id) return user;
+        }
+        return null;
+    }
+
     public int getNextId() throws IOException {
         List<User> users = findAll();
         return users.isEmpty() ? 1 : users.get(users.size() - 1).getId() + 1;
