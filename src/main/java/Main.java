@@ -3,12 +3,16 @@ import io.javalin.http.UnauthorizedResponse;
 import controller.AuthHttpController;
 import controller.ProductHttpController;
 import controller.AddressHttpController;
+import controller.OrderHttpController;
 import business.AuthBusiness;
 import business.ProductBusiness;
 import business.AddressBusiness;
+import business.OrderBusiness;
 import repository.UserRepository;
 import repository.ProductRepository;
 import repository.AddressRepository;
+import repository.OrderRepository;
+import repository.OrderItemsRepository;
 import auth.SimpleTokenManager;
 
 public class Main {
@@ -26,6 +30,11 @@ public class Main {
         AddressBusiness addressBusiness = new AddressBusiness(addressRepository, userRepository);
         AddressHttpController addressHttpController = new AddressHttpController(addressBusiness);
 
+        OrderRepository orderRepository = new OrderRepository();
+        OrderItemsRepository orderItemsRepository = new OrderItemsRepository();
+        OrderBusiness orderBusiness = new OrderBusiness(orderRepository, orderItemsRepository, userRepository, addressRepository, productRepository);
+        OrderHttpController orderHttpController = new OrderHttpController(orderBusiness);
+
         Javalin app = Javalin.create(config -> {
             config.showJavalinBanner = false;
         }).start(7000);
@@ -35,6 +44,8 @@ public class Main {
         app.before("/products/*", ctx -> requireAuth(ctx));
         app.before("/addresses/*", ctx -> requireAuth(ctx));
         app.before("/users/*/addresses", ctx -> requireAuth(ctx));
+        app.before("/orders/*", ctx -> requireAuth(ctx));
+        app.before("/orders", ctx -> requireAuth(ctx));
         app.before("/protected", ctx -> requireAuth(ctx));
 
         // Public routes (no authentication required)
@@ -67,6 +78,16 @@ public class Main {
         // User addresses route
         app.get("/users/{userId}/addresses", addressHttpController::getAddressesByUserId);
 
+        // Order CRUD routes (all protected)
+        app.post("/orders", orderHttpController::createOrder);
+        app.get("/orders", orderHttpController::listOrdersByUser);
+        app.get("/orders/{id}", orderHttpController::getOrderById);
+        app.put("/orders/{id}", orderHttpController::updateOrder);
+        app.delete("/orders/{id}", orderHttpController::cancelOrder);
+
+        // User orders route (optional - for accessing specific user's orders)
+        app.get("/users/{userId}/orders", orderHttpController::listOrdersByUserId);
+
         // Other protected routes
         app.get("/protected", ctx -> {
             ctx.json("{\"message\": \"This is a protected route - you are authenticated!\"}");
@@ -94,6 +115,14 @@ public class Main {
         System.out.println("Delete Address: DELETE http://localhost:7000/addresses/{id}");
         System.out.println("User Addresses: GET http://localhost:7000/users/{userId}/addresses");
         System.out.println("Protected: GET http://localhost:7000/protected");
+        System.out.println("=== Order CRUD Routes (require Authorization header) ===");
+        System.out.println("Create Order: POST http://localhost:7000/orders");
+        System.out.println("List Orders: GET http://localhost:7000/orders");
+        System.out.println("Get Order: GET http://localhost:7000/orders/{id}");
+        System.out.println("Update Order: PUT http://localhost:7000/orders/{id}");
+        System.out.println("Cancel Order: DELETE http://localhost:7000/orders/{id}");
+        System.out.println("User Orders: GET http://localhost:7000/users/{userId}/orders");
+        System.out.println("=== API Documentation ===");
     }
 
     private static void requireAuth(io.javalin.http.Context ctx) {
@@ -112,4 +141,3 @@ public class Main {
         ctx.attribute("userId", userId);
     }
 }
-
