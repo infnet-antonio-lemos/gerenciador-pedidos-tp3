@@ -33,11 +33,6 @@ public class Order {
     private Date createdAt;
     private Date updatedAt;
 
-    // Constructor for new orders (without timestamps)
-    public Order(int id, User user, Address address, OrderStatus orderStatus) {
-        this(id, user, address, orderStatus, new Date(), new Date());
-    }
-
     // Convenience constructor with String values (for backward compatibility)
     public Order(int id, User user, Address address, String orderStatus) {
         this(id, user, address, OrderStatus.valueOf(orderStatus), new Date(), new Date());
@@ -47,53 +42,5 @@ public class Order {
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
         this.updatedAt = new Date();
-    }
-
-    // Convenience setter with String value (for backward compatibility)
-    public void setOrderStatus(String orderStatus) {
-        setOrderStatus(OrderStatus.valueOf(orderStatus));
-    }
-
-    // Deprecated methods for backward compatibility with old 3-status system
-    @Deprecated
-    public String getPaymentStatus() {
-        // Map order status to payment status for backward compatibility
-        switch (orderStatus) {
-            case PENDING: return "PENDING";
-            case PAID:
-            case PROCESSING:
-            case SHIPPED:
-            case DELIVERED: return "PAID";
-            case REFUNDED: return "REFUNDED";
-            case CANCELLED: return "CANCELLED";
-            default: return "PENDING";
-        }
-    }
-
-    @Deprecated
-    public String getShippingStatus() {
-        // Map order status to shipping status for backward compatibility
-        switch (orderStatus) {
-            case PENDING:
-            case PAID:
-            case PROCESSING: return "PENDING";
-            case SHIPPED: return "SHIPPED";
-            case DELIVERED: return "DELIVERED";
-            case CANCELLED:
-            case REFUNDED: return "CANCELLED";
-            default: return "PENDING";
-        }
-    }
-
-    @Deprecated
-    public void setPaymentStatus(String paymentStatus) {
-        // For backward compatibility - ignore this call or map to order status
-        // This maintains API compatibility while internally using single status
-    }
-
-    @Deprecated
-    public void setShippingStatus(String shippingStatus) {
-        // For backward compatibility - ignore this call or map to order status
-        // This maintains API compatibility while internally using single status
     }
 }

@@ -79,9 +79,6 @@ public class Main {
         app.put("/addresses/{id}", addressHttpController::updateAddress);
         app.delete("/addresses/{id}", addressHttpController::deleteAddress);
 
-        // User addresses route
-        app.get("/users/{userId}/addresses", addressHttpController::getAddressesByUserId);
-
         // Order CRUD routes (all protected)
         app.post("/orders", orderHttpController::createOrder);
         app.get("/orders", orderHttpController::listOrdersByUser);

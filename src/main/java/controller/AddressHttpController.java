@@ -104,22 +104,6 @@ public class AddressHttpController {
         }
     }
 
-    // READ - GET /users/:userId/addresses
-    public void getAddressesByUserId(Context ctx) {
-        try {
-            int userId = Integer.parseInt(ctx.pathParam("userId"));
-            List<Address> addresses = addressBusiness.getAddressesByUserId(userId);
-
-            ctx.status(200).json(addresses.stream()
-                .map(AddressResponse::new)
-                .toArray(AddressResponse[]::new));
-        } catch (NumberFormatException e) {
-            ctx.status(400).json(new ErrorResponse("ID do usuário inválido"));
-        } catch (Exception e) {
-            ctx.status(404).json(new ErrorResponse(e.getMessage()));
-        }
-    }
-
     // UPDATE - PUT /addresses/:id
     public void updateAddress(Context ctx) {
         try {
