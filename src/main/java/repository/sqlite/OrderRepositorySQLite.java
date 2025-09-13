@@ -23,18 +23,16 @@ public class OrderRepositorySQLite implements RepositoryInterface<Order> {
 
     @Override
     public Order create(Order order) {
-        String sql = "INSERT INTO orders (user_id, address_id, payment_status, shipping_status, order_status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO orders (user_id, address_id, order_status, created_at, updated_at) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, order.getUser().getId());
             pstmt.setInt(2, order.getAddress().getId());
-            pstmt.setString(3, order.getPaymentStatus());
-            pstmt.setString(4, order.getShippingStatus());
-            pstmt.setString(5, order.getOrderStatus());
-            pstmt.setTimestamp(6, new Timestamp(order.getCreatedAt().getTime()));
-            pstmt.setTimestamp(7, new Timestamp(order.getUpdatedAt().getTime()));
+            pstmt.setString(3, order.getOrderStatus().toString());
+            pstmt.setTimestamp(4, new Timestamp(order.getCreatedAt().getTime()));
+            pstmt.setTimestamp(5, new Timestamp(order.getUpdatedAt().getTime()));
 
             pstmt.executeUpdate();
 
@@ -55,19 +53,17 @@ public class OrderRepositorySQLite implements RepositoryInterface<Order> {
 
     @Override
     public Order update(Order order) {
-        String sql = "UPDATE orders SET user_id = ?, address_id = ?, payment_status = ?, shipping_status = ?, order_status = ?, created_at = ?, updated_at = ? WHERE id = ?";
+        String sql = "UPDATE orders SET user_id = ?, address_id = ?, order_status = ?, created_at = ?, updated_at = ? WHERE id = ?";
 
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, order.getUser().getId());
             pstmt.setInt(2, order.getAddress().getId());
-            pstmt.setString(3, order.getPaymentStatus());
-            pstmt.setString(4, order.getShippingStatus());
-            pstmt.setString(5, order.getOrderStatus());
-            pstmt.setTimestamp(6, new Timestamp(order.getCreatedAt().getTime()));
-            pstmt.setTimestamp(7, new Timestamp(order.getUpdatedAt().getTime()));
-            pstmt.setInt(8, order.getId());
+            pstmt.setString(3, order.getOrderStatus().toString());
+            pstmt.setTimestamp(4, new Timestamp(order.getCreatedAt().getTime()));
+            pstmt.setTimestamp(5, new Timestamp(order.getUpdatedAt().getTime()));
+            pstmt.setInt(6, order.getId());
 
             pstmt.executeUpdate();
             return order;
@@ -210,13 +206,20 @@ public class OrderRepositorySQLite implements RepositoryInterface<Order> {
             System.err.println("[ORDER_REPO] Warning: Could not get updated_at timestamp, using current date");
         }
 
+        // Parse order status from database and convert to enum
+        String orderStatusString = rs.getString("order_status");
+        Order.OrderStatus orderStatus = Order.OrderStatus.PENDING; // default
+        try {
+            orderStatus = Order.OrderStatus.valueOf(orderStatusString);
+        } catch (Exception e) {
+            System.err.println("[ORDER_REPO] Warning: Invalid order status '" + orderStatusString + "', using PENDING");
+        }
+
         return new Order(
             rs.getInt("id"),
             user,
             address,
-            rs.getString("payment_status"),
-            rs.getString("shipping_status"),
-            rs.getString("order_status"),
+            orderStatus,
             createdAt,
             updatedAt
         );

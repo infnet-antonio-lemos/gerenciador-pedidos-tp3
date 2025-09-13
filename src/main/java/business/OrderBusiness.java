@@ -83,15 +83,12 @@ public class OrderBusiness {
                 if (item.getAmount() <= 0) {
                     throw new RuntimeException("Quantidade deve ser maior que zero");
                 }
-                if (item.getCurrentValue() <= 0) {
-                    throw new RuntimeException("Valor do produto deve ser maior que zero");
-                }
-                System.out.println("[ORDER] Product validated: " + product.getName() + ", amount: " + item.getAmount());
+                System.out.println("[ORDER] Product validated: " + product.getName() + ", amount: " + item.getAmount() + ", current price: " + product.getValue());
             }
 
             // Create the order
             System.out.println("[ORDER] Creating order entity");
-            Order order = new Order(0, user, address, "PENDING", "PENDING", "PENDING");
+            Order order = new Order(0, user, address, "PENDING");
             order = orderRepository.create(order);
             System.out.println("[ORDER] Order created with ID: " + order.getId());
 
@@ -100,10 +97,10 @@ public class OrderBusiness {
             for (OrderItemsDTO itemDTO : orderItems) {
                 Product product = productRepository.get(itemDTO.getProductId());
 
-                // Create order item
-                OrderItems orderItem = new OrderItems(order, product, itemDTO.getAmount(), itemDTO.getCurrentValue());
+                // Create order item using the product's current price from database
+                OrderItems orderItem = new OrderItems(order, product, itemDTO.getAmount(), product.getValue());
                 orderItem = orderItemsRepository.create(orderItem);
-                System.out.println("[ORDER] Order item created with ID: " + orderItem.getId());
+                System.out.println("[ORDER] Order item created with ID: " + orderItem.getId() + " using current price: " + product.getValue());
 
                 // Update product stock
                 product.setAvailableAmount(product.getAvailableAmount() - itemDTO.getAmount());
@@ -146,7 +143,27 @@ public class OrderBusiness {
         return orderItems;
     }
 
-    public Order updateOrderStatus(int orderId, String orderStatus, String paymentStatus, String shippingStatus) {
+    public Order updateOrderStatus(int orderId, String orderStatus) {
+        Order order = orderRepository.get(orderId);
+        if (order == null) {
+            throw new RuntimeException("Pedido não encontrado com ID: " + orderId);
+        }
+
+        if (orderStatus != null) {
+            try {
+                Order.OrderStatus newStatus = Order.OrderStatus.valueOf(orderStatus);
+                order.setOrderStatus(newStatus);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Status de pedido inválido: " + orderStatus);
+            }
+        }
+
+        order.setUpdatedAt(new Date());
+        return orderRepository.update(order);
+    }
+
+    // Overloaded method for enum parameter
+    public Order updateOrderStatus(int orderId, Order.OrderStatus orderStatus) {
         Order order = orderRepository.get(orderId);
         if (order == null) {
             throw new RuntimeException("Pedido não encontrado com ID: " + orderId);
@@ -154,12 +171,6 @@ public class OrderBusiness {
 
         if (orderStatus != null) {
             order.setOrderStatus(orderStatus);
-        }
-        if (paymentStatus != null) {
-            order.setPaymentStatus(paymentStatus);
-        }
-        if (shippingStatus != null) {
-            order.setShippingStatus(shippingStatus);
         }
 
         order.setUpdatedAt(new Date());
@@ -172,8 +183,9 @@ public class OrderBusiness {
             throw new RuntimeException("Pedido não encontrado com ID: " + orderId);
         }
 
-        // Only allow cancellation if order is still pending
-        if (!"PENDING".equals(order.getOrderStatus())) {
+        // Only allow cancellation if order is still pending or paid (not yet shipped)
+        if (order.getOrderStatus() != Order.OrderStatus.PENDING &&
+            order.getOrderStatus() != Order.OrderStatus.PAID) {
             throw new RuntimeException("Não é possível cancelar um pedido com status: " + order.getOrderStatus());
         }
 
@@ -185,10 +197,8 @@ public class OrderBusiness {
             productRepository.update(product);
         }
 
-        // Update order status
-        order.setOrderStatus("CANCELLED");
-        order.setPaymentStatus("CANCELLED");
-        order.setShippingStatus("CANCELLED");
+        // Update order status to cancelled
+        order.setOrderStatus(Order.OrderStatus.CANCELLED);
         order.setUpdatedAt(new Date());
         orderRepository.update(order);
     }

@@ -72,14 +72,13 @@ public class OrderHttpController {
 
             List<OrderItemsDTO> orderItems = new ArrayList<>();
             for (JsonNode itemNode : json.get("items")) {
-                if (itemNode.get("productId") == null || itemNode.get("currentValue") == null || itemNode.get("amount") == null) {
-                    ctx.status(400).json(new ErrorResponse("Cada item deve conter: productId, currentValue, amount"));
+                if (itemNode.get("productId") == null || itemNode.get("amount") == null) {
+                    ctx.status(400).json(new ErrorResponse("Cada item deve conter: productId, amount"));
                     return;
                 }
 
                 OrderItemsDTO item = new OrderItemsDTO(
                     itemNode.get("productId").asInt(),
-                    itemNode.get("currentValue").asDouble(),
                     itemNode.get("amount").asInt()
                 );
                 orderItems.add(item);
@@ -118,10 +117,13 @@ public class OrderHttpController {
             JsonNode json = objectMapper.readTree(ctx.body());
 
             String orderStatus = json.has("orderStatus") ? json.get("orderStatus").asText() : null;
-            String paymentStatus = json.has("paymentStatus") ? json.get("paymentStatus").asText() : null;
-            String shippingStatus = json.has("shippingStatus") ? json.get("shippingStatus").asText() : null;
 
-            Order updatedOrder = orderBusiness.updateOrderStatus(orderId, orderStatus, paymentStatus, shippingStatus);
+            // For backward compatibility, still accept old status fields but ignore them
+            if (json.has("paymentStatus") || json.has("shippingStatus")) {
+                System.out.println("[ORDER_CONTROLLER] Warning: paymentStatus and shippingStatus are deprecated, use orderStatus only");
+            }
+
+            Order updatedOrder = orderBusiness.updateOrderStatus(orderId, orderStatus);
 
             List<OrderItems> orderItems = orderBusiness.getOrderItems(orderId);
             double totalValue = orderBusiness.calculateOrderTotal(orderId);

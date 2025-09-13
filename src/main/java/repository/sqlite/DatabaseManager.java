@@ -69,8 +69,6 @@ public class DatabaseManager {
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     user_id INTEGER NOT NULL,
                     address_id INTEGER NOT NULL,
-                    payment_status TEXT NOT NULL,
-                    shipping_status TEXT NOT NULL,
                     order_status TEXT NOT NULL,
                     created_at DATETIME NOT NULL,
                     updated_at DATETIME NOT NULL,

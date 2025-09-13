@@ -1,65 +1,99 @@
 package entity;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Setter;
+import lombok.AccessLevel;
 import java.util.Date;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Order {
+
+    // Single simplified order status enum
+    public enum OrderStatus {
+        PENDING,        // Order created, awaiting payment
+        PAID,           // Payment confirmed, being prepared
+        PROCESSING,     // Order being prepared for shipping
+        SHIPPED,        // Order sent to customer
+        DELIVERED,      // Order successfully delivered
+        CANCELLED,      // Order cancelled
+        REFUNDED        // Order refunded
+    }
+
     private int id;
     private User user;
     private Address address;
-    private String paymentStatus;
-    private String shippingStatus;
-    private String orderStatus;
+
+    @Setter(AccessLevel.NONE) // We'll provide custom setter
+    private OrderStatus orderStatus;
+
     private Date createdAt;
     private Date updatedAt;
 
-    // Default constructor
-    public Order() {
-        this.createdAt = new Date();
-        this.updatedAt = new Date();
-    }
-
-    public Order(int id, User user, Address address, String paymentStatus, String shippingStatus, String orderStatus, Date createdAt, Date updatedAt) {
-        this.id = id;
-        this.user = user;
-        this.address = address;
-        this.paymentStatus = paymentStatus;
-        this.shippingStatus = shippingStatus;
-        this.orderStatus = orderStatus;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
     // Constructor for new orders (without timestamps)
-    public Order(int id, User user, Address address, String paymentStatus, String shippingStatus, String orderStatus) {
-        this(id, user, address, paymentStatus, shippingStatus, orderStatus, new Date(), new Date());
+    public Order(int id, User user, Address address, OrderStatus orderStatus) {
+        this(id, user, address, orderStatus, new Date(), new Date());
     }
 
-    // Getters
-    public int getId() { return id; }
-    public User getUser() { return user; }
-    public Address getAddress() { return address; }
-    public String getPaymentStatus() { return paymentStatus; }
-    public String getShippingStatus() { return shippingStatus; }
-    public String getOrderStatus() { return orderStatus; }
-    public Date getCreatedAt() { return createdAt; }
-    public Date getUpdatedAt() { return updatedAt; }
+    // Convenience constructor with String values (for backward compatibility)
+    public Order(int id, User user, Address address, String orderStatus) {
+        this(id, user, address, OrderStatus.valueOf(orderStatus), new Date(), new Date());
+    }
 
-    // Setters
-    public void setId(int id) { this.id = id; }
-    public void setUser(User user) { this.user = user; }
-    public void setAddress(Address address) { this.address = address; }
-    public void setPaymentStatus(String paymentStatus) {
-        this.paymentStatus = paymentStatus;
-        this.updatedAt = new Date();
-    }
-    public void setShippingStatus(String shippingStatus) {
-        this.shippingStatus = shippingStatus;
-        this.updatedAt = new Date();
-    }
-    public void setOrderStatus(String orderStatus) {
+    // Custom setter that updates timestamp
+    public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
         this.updatedAt = new Date();
     }
-    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
-    public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
+
+    // Convenience setter with String value (for backward compatibility)
+    public void setOrderStatus(String orderStatus) {
+        setOrderStatus(OrderStatus.valueOf(orderStatus));
+    }
+
+    // Deprecated methods for backward compatibility with old 3-status system
+    @Deprecated
+    public String getPaymentStatus() {
+        // Map order status to payment status for backward compatibility
+        switch (orderStatus) {
+            case PENDING: return "PENDING";
+            case PAID:
+            case PROCESSING:
+            case SHIPPED:
+            case DELIVERED: return "PAID";
+            case REFUNDED: return "REFUNDED";
+            case CANCELLED: return "CANCELLED";
+            default: return "PENDING";
+        }
+    }
+
+    @Deprecated
+    public String getShippingStatus() {
+        // Map order status to shipping status for backward compatibility
+        switch (orderStatus) {
+            case PENDING:
+            case PAID:
+            case PROCESSING: return "PENDING";
+            case SHIPPED: return "SHIPPED";
+            case DELIVERED: return "DELIVERED";
+            case CANCELLED:
+            case REFUNDED: return "CANCELLED";
+            default: return "PENDING";
+        }
+    }
+
+    @Deprecated
+    public void setPaymentStatus(String paymentStatus) {
+        // For backward compatibility - ignore this call or map to order status
+        // This maintains API compatibility while internally using single status
+    }
+
+    @Deprecated
+    public void setShippingStatus(String shippingStatus) {
+        // For backward compatibility - ignore this call or map to order status
+        // This maintains API compatibility while internally using single status
+    }
 }
