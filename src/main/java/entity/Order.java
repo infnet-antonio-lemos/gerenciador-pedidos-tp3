@@ -12,6 +12,12 @@ public class Order {
     private Date createdAt;
     private Date updatedAt;
 
+    // Default constructor
+    public Order() {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
+
     public Order(int id, User user, Address address, String paymentStatus, String shippingStatus, String orderStatus, Date createdAt, Date updatedAt) {
         this.id = id;
         this.user = user;

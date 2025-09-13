@@ -75,7 +75,12 @@ public class AddressHttpController {
     // READ - GET /addresses
     public void getAllAddresses(Context ctx) {
         try {
-            List<Address> addresses = addressBusiness.getAllAddresses();
+            Integer userId = ctx.attribute("userId"); // Get from authentication middleware
+            if (userId == null) {
+                ctx.status(401).json(new ErrorResponse("Usuário não autenticado"));
+                return;
+            }
+            List<Address> addresses = addressBusiness.getAllAddresses(userId);
             ctx.status(200).json(addresses.stream()
                 .map(AddressResponse::new)
                 .toArray(AddressResponse[]::new));
@@ -88,7 +93,8 @@ public class AddressHttpController {
     public void getAddressById(Context ctx) {
         try {
             int id = Integer.parseInt(ctx.pathParam("id"));
-            Address address = addressBusiness.getAddressById(id);
+            Integer userId = ctx.attribute("userId"); // Get from authentication middleware
+            Address address = addressBusiness.getAddressById(id, userId);
 
             ctx.status(200).json(new AddressResponse(address));
         } catch (NumberFormatException e) {
@@ -118,6 +124,7 @@ public class AddressHttpController {
     public void updateAddress(Context ctx) {
         try {
             int id = Integer.parseInt(ctx.pathParam("id"));
+            Integer userId = ctx.attribute("userId"); // Get from authentication middleware
             JsonNode json = objectMapper.readTree(ctx.body());
 
             // Validate required fields exist
@@ -154,7 +161,7 @@ public class AddressHttpController {
             String city = json.get("city").asText();
             String state = json.get("state").asText();
 
-            Address address = addressBusiness.updateAddress(id, street, number, neighborhood, zipCode, complement, city, state);
+            Address address = addressBusiness.updateAddress(id, userId, street, number, neighborhood, zipCode, complement, city, state);
 
             ctx.status(200).json(new AddressResponse(address));
         } catch (NumberFormatException e) {
@@ -168,7 +175,8 @@ public class AddressHttpController {
     public void deleteAddress(Context ctx) {
         try {
             int id = Integer.parseInt(ctx.pathParam("id"));
-            addressBusiness.deleteAddress(id);
+            Integer userId = ctx.attribute("userId"); // Get from authentication middleware
+            addressBusiness.deleteAddress(id, userId);
 
             ctx.status(200).json(new MessageResponse("Endereço deletado com sucesso"));
         } catch (NumberFormatException e) {

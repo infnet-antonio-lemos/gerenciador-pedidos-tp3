@@ -24,8 +24,15 @@ public class OrderHttpController {
     // CREATE - POST /orders
     public void createOrder(Context ctx) {
         try {
+            System.out.println("[CONTROLLER] Starting order creation request");
             JsonNode json = objectMapper.readTree(ctx.body());
             Integer userId = ctx.attribute("userId"); // From authentication middleware
+
+            if (userId == null) {
+                ctx.status(401).json(new ErrorResponse("Usuário não autenticado"));
+                return;
+            }
+            System.out.println("[CONTROLLER] User ID from token: " + userId);
 
             // Parse address (either new address data or existing address ID)
             AddressDTO addressDTO = null;
@@ -33,6 +40,7 @@ public class OrderHttpController {
 
             if (json.has("addressId") && !json.get("addressId").isNull()) {
                 existingAddressId = json.get("addressId").asInt();
+                System.out.println("[CONTROLLER] Using existing address ID: " + existingAddressId);
             } else if (json.has("address")) {
                 JsonNode addressNode = json.get("address");
                 if (addressNode.get("street") == null || addressNode.get("number") == null ||
@@ -50,6 +58,7 @@ public class OrderHttpController {
                     addressNode.get("city").asText(),
                     addressNode.get("state").asText()
                 );
+                System.out.println("[CONTROLLER] Creating new address");
             } else {
                 ctx.status(400).json(new ErrorResponse("É necessário fornecer 'addressId' ou dados completos do 'address'"));
                 return;
@@ -75,18 +84,29 @@ public class OrderHttpController {
                 );
                 orderItems.add(item);
             }
+            System.out.println("[CONTROLLER] Parsed " + orderItems.size() + " order items");
 
             // Create order
+            System.out.println("[CONTROLLER] Calling business layer to create order");
             Order order = orderBusiness.createOrder(userId, addressDTO, existingAddressId, orderItems);
+            System.out.println("[CONTROLLER] Order created with ID: " + order.getId());
 
             // Get order items to include in response
+            System.out.println("[CONTROLLER] Getting order items for response");
             List<OrderItems> createdItems = orderBusiness.getOrderItems(order.getId());
+            System.out.println("[CONTROLLER] Found " + createdItems.size() + " created items");
+
+            System.out.println("[CONTROLLER] Calculating order total");
             double totalValue = orderBusiness.calculateOrderTotal(order.getId());
+            System.out.println("[CONTROLLER] Total calculated: " + totalValue);
 
             OrderResponse response = new OrderResponse(order, createdItems, totalValue);
             ctx.status(201).json(response);
+            System.out.println("[CONTROLLER] Order creation completed successfully");
 
         } catch (Exception e) {
+            System.err.println("[CONTROLLER] Error creating order: " + e.getMessage());
+            e.printStackTrace();
             ctx.status(400).json(new ErrorResponse("Erro ao criar pedido: " + e.getMessage()));
         }
     }

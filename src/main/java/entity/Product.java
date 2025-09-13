@@ -11,6 +11,10 @@ public class Product {
     private String image;
     private Date deletedAt;
 
+    // Default constructor
+    public Product() {
+    }
+
     public Product(int id, String name, double value, String description, int availableAmount, String image, Date deletedAt) {
         this.id = id;
         this.name = name;
@@ -36,6 +40,7 @@ public class Product {
     public Date getDeletedAt() { return deletedAt; }
 
     // Setters
+    public void setId(int id) { this.id = id; }
     public void setName(String name) { this.name = name; }
     public void setValue(double value) { this.value = value; }
     public void setDescription(String description) { this.description = description; }

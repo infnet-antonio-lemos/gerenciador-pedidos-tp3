@@ -1,3 +1,4 @@
+import entity.User;
 import io.javalin.Javalin;
 import io.javalin.http.UnauthorizedResponse;
 import controller.AuthHttpController;
@@ -8,30 +9,31 @@ import business.AuthBusiness;
 import business.ProductBusiness;
 import business.AddressBusiness;
 import business.OrderBusiness;
-import repository.UserRepository;
-import repository.ProductRepository;
-import repository.AddressRepository;
-import repository.OrderRepository;
-import repository.OrderItemsRepository;
+import repository.RepositoryInterface;
+import repository.sqlite.UserRepositorySQLite;
+import repository.sqlite.ProductRepositorySQLite;
+import repository.sqlite.AddressRepositorySQLite;
+import repository.sqlite.OrderRepositorySQLite;
+import repository.sqlite.OrderItemsRepositorySQLite;
 import auth.SimpleTokenManager;
 
 public class Main {
     public static void main(String[] args) {
-        // Initialize dependencies
-        UserRepository userRepository = new UserRepository();
+        // Initialize SQLite repositories
+        RepositoryInterface<User> userRepository = new UserRepositorySQLite();
         AuthBusiness authBusiness = new AuthBusiness(userRepository);
         AuthHttpController authHttpController = new AuthHttpController(authBusiness);
 
-        ProductRepository productRepository = new ProductRepository();
+        ProductRepositorySQLite productRepository = new ProductRepositorySQLite();
         ProductBusiness productBusiness = new ProductBusiness(productRepository);
         ProductHttpController productHttpController = new ProductHttpController(productBusiness);
 
-        AddressRepository addressRepository = new AddressRepository();
+        AddressRepositorySQLite addressRepository = new AddressRepositorySQLite();
         AddressBusiness addressBusiness = new AddressBusiness(addressRepository, userRepository);
         AddressHttpController addressHttpController = new AddressHttpController(addressBusiness);
 
-        OrderRepository orderRepository = new OrderRepository();
-        OrderItemsRepository orderItemsRepository = new OrderItemsRepository();
+        OrderRepositorySQLite orderRepository = new OrderRepositorySQLite();
+        OrderItemsRepositorySQLite orderItemsRepository = new OrderItemsRepositorySQLite();
         OrderBusiness orderBusiness = new OrderBusiness(orderRepository, orderItemsRepository, userRepository, addressRepository, productRepository);
         OrderHttpController orderHttpController = new OrderHttpController(orderBusiness);
 
@@ -42,7 +44,9 @@ public class Main {
         // Authentication middleware for protected routes
         app.before("/profile", ctx -> requireAuth(ctx));
         app.before("/products/*", ctx -> requireAuth(ctx));
+        app.before("/products", ctx -> requireAuth(ctx));
         app.before("/addresses/*", ctx -> requireAuth(ctx));
+        app.before("/addresses", ctx -> requireAuth(ctx));
         app.before("/users/*/addresses", ctx -> requireAuth(ctx));
         app.before("/orders/*", ctx -> requireAuth(ctx));
         app.before("/orders", ctx -> requireAuth(ctx));

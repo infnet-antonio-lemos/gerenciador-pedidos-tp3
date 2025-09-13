@@ -1,14 +1,14 @@
 package business;
 
 import entity.Product;
-import repository.ProductRepository;
+import repository.RepositoryInterface;
 
 import java.util.List;
 
 public class ProductBusiness {
-    private ProductRepository productRepository;
+    private RepositoryInterface<Product> productRepository;
 
-    public ProductBusiness(ProductRepository productRepository) {
+    public ProductBusiness(RepositoryInterface<Product> productRepository) {
         this.productRepository = productRepository;
     }
 
@@ -27,14 +27,12 @@ public class ProductBusiness {
             throw new Exception("Quantidade disponível deve ser positiva");
         }
 
-        int id = productRepository.getNextId();
-        Product product = new Product(id, name.trim(), value, description.trim(), availableAmount, image != null ? image.trim() : "");
-        productRepository.save(product);
-        return product;
+        Product product = new Product(0, name.trim(), value, description.trim(), availableAmount, image != null ? image.trim() : "");
+        return productRepository.create(product);
     }
 
     public Product updateProduct(int id, String name, double value, String description, int availableAmount, String image) throws Exception {
-        Product existingProduct = productRepository.findById(id);
+        Product existingProduct = productRepository.get(id);
         if (existingProduct == null) {
             throw new Exception("Produto não encontrado");
         }
@@ -53,23 +51,21 @@ public class ProductBusiness {
             throw new Exception("Quantidade disponível deve ser positiva");
         }
 
-        // Update fields
         existingProduct.setName(name.trim());
         existingProduct.setValue(value);
         existingProduct.setDescription(description.trim());
         existingProduct.setAvailableAmount(availableAmount);
         existingProduct.setImage(image != null ? image.trim() : "");
 
-        productRepository.update(existingProduct);
-        return existingProduct;
+        return productRepository.update(existingProduct);
     }
 
     public List<Product> getAllProducts() throws Exception {
-        return productRepository.findAll();
+        return productRepository.list();
     }
 
     public Product getProductById(int id) throws Exception {
-        Product product = productRepository.findById(id);
+        Product product = productRepository.get(id);
         if (product == null) {
             throw new Exception("Produto não encontrado");
         }
@@ -77,7 +73,7 @@ public class ProductBusiness {
     }
 
     public void deleteProduct(int id) throws Exception {
-        Product product = productRepository.findById(id);
+        Product product = productRepository.get(id);
         if (product == null) {
             throw new Exception("Produto não encontrado");
         }

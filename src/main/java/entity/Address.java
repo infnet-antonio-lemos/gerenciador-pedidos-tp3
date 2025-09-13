@@ -11,6 +11,10 @@ public class Address {
     private String city;
     private String state;
 
+    // Default constructor
+    public Address() {
+    }
+
     public Address(int id, User user, String street, String number, String neighborhood,
                    String zipCode, String complement, String city, String state) {
         this.id = id;
@@ -51,6 +55,7 @@ public class Address {
     public String getState() { return state; }
 
     // Setters
+    public void setId(int id) { this.id = id; }
     public void setUser(User user) { this.user = user; }
     public void setStreet(String street) { this.street = street; }
     public void setNumber(String number) { this.number = number; }
