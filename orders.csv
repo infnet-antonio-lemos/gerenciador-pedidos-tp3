@@ -1,3 +1,0 @@
-id,user_id,address_id,payment_status,shipping_status,order_status,created_at,updated_at
-1,1,1,CANCELLED,CANCELLED,CANCELLED,2025-09-12 20:14:34,2025-09-12 20:29:36
-2,1,2,PENDING,PENDING,PENDING,2025-09-12 20:21:23,2025-09-12 20:21:23
