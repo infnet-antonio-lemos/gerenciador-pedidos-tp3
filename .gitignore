@@ -1,3 +1,6 @@
+gerenciador_pedidos.db
+*.csv
+
 # Maven
 target/
 pom.xml.tag
