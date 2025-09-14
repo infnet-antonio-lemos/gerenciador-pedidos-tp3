@@ -126,7 +126,6 @@ public class OrderMenu {
         } catch (NumberFormatException e) {
             System.out.println("ID inválido. Digite apenas números.");
         } catch (Exception e) {
-            System.out.prinln(e)
             System.out.println("Erro ao buscar pedido: " + e.getMessage());
         }
     }

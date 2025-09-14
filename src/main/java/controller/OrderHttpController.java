@@ -235,10 +235,13 @@ public class OrderHttpController {
                 return;
             }
 
-            List<OrderItems> orderItems = orderBusiness.getOrderItems(orderId);
-            double totalValue = orderBusiness.calculateOrderTotal(orderId);
+            // Get detailed order information
+            CleanOrderResponse response = orderBusiness.getOrderDetailsById(orderId);
+            if (response == null) {
+                ctx.status(404).json(new ErrorResponse("Detalhes do pedido não encontrados"));
+                return;
+            }
 
-            OrderResponse response = new OrderResponse(order, orderItems, totalValue);
             ctx.json(response);
 
         } catch (NumberFormatException e) {
@@ -282,6 +285,109 @@ public class OrderHttpController {
             this.order = order;
             this.itemCount = itemCount;
             this.totalValue = totalValue;
+        }
+    }
+
+    // Clean response classes without circular references
+    public static class CleanOrderResponse {
+        public CleanOrder order;
+        public List<CleanOrderItem> items;
+        public double totalValue;
+
+        public CleanOrderResponse(CleanOrder order, List<CleanOrderItem> items, double totalValue) {
+            this.order = order;
+            this.items = items;
+            this.totalValue = totalValue;
+        }
+    }
+
+    public static class CleanOrder {
+        public int id;
+        public CleanUser user;
+        public CleanAddress address;
+        public String orderStatus;
+        public long createdAt;
+        public long updatedAt;
+
+        public CleanOrder(int id, CleanUser user, CleanAddress address, String orderStatus, long createdAt, long updatedAt) {
+            this.id = id;
+            this.user = user;
+            this.address = address;
+            this.orderStatus = orderStatus;
+            this.createdAt = createdAt;
+            this.updatedAt = updatedAt;
+        }
+    }
+
+    public static class CleanUser {
+        public int id;
+        public String name;
+        public String email;
+        public String document;
+
+        public CleanUser(int id, String name, String email, String document) {
+            this.id = id;
+            this.name = name;
+            this.email = email;
+            this.document = document;
+        }
+    }
+
+    public static class CleanAddress {
+        public int id;
+        public String street;
+        public String number;
+        public String neighborhood;
+        public String zipCode;
+        public String complement;
+        public String city;
+        public String state;
+
+        public CleanAddress(int id, String street, String number, String neighborhood, String zipCode, String complement, String city, String state) {
+            this.id = id;
+            this.street = street;
+            this.number = number;
+            this.neighborhood = neighborhood;
+            this.zipCode = zipCode;
+            this.complement = complement;
+            this.city = city;
+            this.state = state;
+        }
+    }
+
+    public static class CleanOrderItem {
+        public int id;
+        public CleanProduct product;
+        public int amount;
+        public double value;
+        public double totalValue;
+
+        public CleanOrderItem(int id, CleanProduct product, int amount, double value, double totalValue) {
+            this.id = id;
+            this.product = product;
+            this.amount = amount;
+            this.value = value;
+            this.totalValue = totalValue;
+        }
+    }
+
+    public static class CleanProduct {
+        public int id;
+        public String name;
+        public String description;
+        public int availableAmount;
+        public String image;
+        public String deletedAt;
+        public boolean deleted;
+
+        public CleanProduct(int id, String name, String description, int availableAmount, String image, String deletedAt, boolean deleted) {
+            this.id = id;
+            this.name = name;
+            this.description = description;
+            this.availableAmount = availableAmount;
+            this.image = image;
+            this.deletedAt = deletedAt;
+            this.deleted = deleted;
         }
     }
 }

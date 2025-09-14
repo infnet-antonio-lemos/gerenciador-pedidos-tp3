@@ -227,4 +227,101 @@ public class OrderBusiness {
     public List<Order> getAllOrders() {
         return orderRepository.list();
     }
+
+    public controller.OrderHttpController.CleanOrderResponse getOrderDetailsById(int orderId) {
+        try {
+            // Get the order
+            Order order = orderRepository.get(orderId);
+            if (order == null) {
+                return null;
+            }
+
+            // Get the user details
+            User user = userRepository.get(order.getUser().getId());
+            if (user == null) {
+                throw new RuntimeException("Usuário não encontrado para o pedido");
+            }
+
+            // Get the address details
+            Address address = addressRepository.get(order.getAddress().getId());
+            if (address == null) {
+                throw new RuntimeException("Endereço não encontrado para o pedido");
+            }
+
+            // Get order items
+            List<OrderItems> orderItemsList = getOrderItems(orderId);
+            List<controller.OrderHttpController.CleanOrderItem> cleanItems = new ArrayList<>();
+
+            for (OrderItems item : orderItemsList) {
+                // Get product details
+                Product product = productRepository.get(item.getProduct().getId());
+                if (product != null) {
+                    controller.OrderHttpController.CleanProduct cleanProduct =
+                        new controller.OrderHttpController.CleanProduct(
+                            product.getId(),
+                            product.getName(),
+                            product.getDescription() != null ? product.getDescription() : "",
+                            product.getAvailableAmount(),
+                            product.getImage(),
+                            product.getDeletedAt() != null ? product.getDeletedAt().toString() : null,
+                            product.isDeleted()
+                        );
+
+                    controller.OrderHttpController.CleanOrderItem cleanItem =
+                        new controller.OrderHttpController.CleanOrderItem(
+                            item.getId(),
+                            cleanProduct,
+                            item.getAmount(),
+                            item.getValue(),
+                            item.getTotalValue()
+                        );
+
+                    cleanItems.add(cleanItem);
+                }
+            }
+
+            // Create clean user
+            controller.OrderHttpController.CleanUser cleanUser =
+                new controller.OrderHttpController.CleanUser(
+                    user.getId(),
+                    user.getName(),
+                    user.getEmail(),
+                    user.getDocument()
+                );
+
+            // Create clean address
+            controller.OrderHttpController.CleanAddress cleanAddress =
+                new controller.OrderHttpController.CleanAddress(
+                    address.getId(),
+                    address.getStreet(),
+                    address.getNumber(),
+                    address.getNeighborhood(),
+                    address.getZipCode(),
+                    address.getComplement() != null ? address.getComplement() : "",
+                    address.getCity(),
+                    address.getState()
+                );
+
+            // Create clean order
+            controller.OrderHttpController.CleanOrder cleanOrder =
+                new controller.OrderHttpController.CleanOrder(
+                    order.getId(),
+                    cleanUser,
+                    cleanAddress,
+                    order.getOrderStatus().name(),
+                    order.getCreatedAt().getTime(),
+                    order.getUpdatedAt().getTime()
+                );
+
+            // Calculate total value
+            double totalValue = calculateOrderTotal(orderId);
+
+            return new controller.OrderHttpController.CleanOrderResponse(cleanOrder, cleanItems, totalValue);
+
+        } catch (Exception e) {
+            System.err.println("Error getting order details: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao buscar detalhes do pedido: " + e.getMessage());
+        }
+    }
 }
