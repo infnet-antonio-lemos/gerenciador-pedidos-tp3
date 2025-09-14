@@ -125,45 +125,6 @@ public class AddressRepositorySQLite implements RepositoryInterface<Address> {
         }
     }
 
-    // Additional methods for compatibility with existing code
-    public List<Address> findByUserId(int userId) {
-        String sql = "SELECT * FROM addresses WHERE user_id = ?";
-        List<Address> addresses = new ArrayList<>();
-
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, userId);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    addresses.add(mapResultSetToAddress(rs));
-                }
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao buscar endereços por usuário", e);
-        }
-
-        return addresses;
-    }
-
-    public Address findById(int id) {
-        return get(id);
-    }
-
-    public List<Address> findAll() {
-        return list();
-    }
-
-    public void save(Address address) {
-        if (address.getId() == 0) {
-            create(address);
-        } else {
-            update(address);
-        }
-    }
-
     private Address mapResultSetToAddress(ResultSet rs) throws SQLException {
         return new Address(
             rs.getInt("id"),

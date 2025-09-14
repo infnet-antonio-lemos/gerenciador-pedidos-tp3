@@ -12,15 +12,6 @@ import java.util.Date;
 import java.util.List;
 
 public class OrderRepositorySQLite implements RepositoryInterface<Order> {
-
-    private UserRepositorySQLite userRepository;
-    private AddressRepositorySQLite addressRepository;
-
-    public OrderRepositorySQLite() {
-        this.userRepository = new UserRepositorySQLite();
-        this.addressRepository = new AddressRepositorySQLite();
-    }
-
     @Override
     public Order create(Order order) {
         String sql = "INSERT INTO orders (user_id, address_id, order_status, created_at, updated_at) VALUES (?, ?, ?, ?, ?)";

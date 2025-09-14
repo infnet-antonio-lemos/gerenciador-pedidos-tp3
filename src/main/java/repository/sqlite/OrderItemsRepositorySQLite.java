@@ -3,29 +3,14 @@ package repository.sqlite;
 import entity.OrderItems;
 import entity.Order;
 import entity.Product;
-import entity.User;
-import entity.Address;
 import repository.RepositoryInterface;
-import repository.sqlite.DatabaseManager;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class OrderItemsRepositorySQLite implements RepositoryInterface<OrderItems> {
-
-    private OrderRepositorySQLite orderRepository;
-    private ProductRepositorySQLite productRepository;
-    private UserRepositorySQLite userRepository;
-    private AddressRepositorySQLite addressRepository;
-
-    public OrderItemsRepositorySQLite() {
-        this.orderRepository = new OrderRepositorySQLite();
-        this.productRepository = new ProductRepositorySQLite();
-        this.userRepository = new UserRepositorySQLite();
-        this.addressRepository = new AddressRepositorySQLite();
-    }
+    public OrderItemsRepositorySQLite() {}
 
     @Override
     public OrderItems create(OrderItems orderItem) {
