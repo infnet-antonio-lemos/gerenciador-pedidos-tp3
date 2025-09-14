@@ -113,7 +113,7 @@ public class OrderMenu {
                 JsonNode product = item.get("product");
                 String productName = product.get("name").asText();
                 int amount = item.get("amount").asInt();
-                double unitPrice = item.get("unitValue").asDouble();
+                double unitPrice = item.get("value").asDouble(); // Changed from "unitValue" to "value"
                 double subtotal = item.get("totalValue").asDouble();
 
                 System.out.printf("%-30s %-10d R$%-10.2f R$%-10.2f%n",
