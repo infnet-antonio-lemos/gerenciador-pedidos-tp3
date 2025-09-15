@@ -179,7 +179,6 @@ public class ProductMenu {
             System.out.println("Valor: R$ " + String.format("%.2f", value));
             System.out.println("Estoque: " + stock);
 
-            System.out.println("Operação cancelada.");
             System.out.print("\nTem certeza que deseja deletar este produto? (s/N): ");
             String confirmation = scanner.nextLine().trim().toLowerCase();
 
