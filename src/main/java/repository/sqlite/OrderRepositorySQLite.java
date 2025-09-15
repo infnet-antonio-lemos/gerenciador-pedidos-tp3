@@ -4,7 +4,6 @@ import entity.Order;
 import entity.User;
 import entity.Address;
 import repository.RepositoryInterface;
-import repository.sqlite.DatabaseManager;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -118,50 +117,6 @@ public class OrderRepositorySQLite implements RepositoryInterface<Order> {
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao deletar pedido", e);
         }
-    }
-
-    // Additional methods for compatibility with existing code
-    public List<Order> getByUserId(int userId) {
-        String sql = "SELECT * FROM orders WHERE user_id = ?";
-        List<Order> orders = new ArrayList<>();
-
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, userId);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    orders.add(mapResultSetToOrder(rs));
-                }
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao buscar pedidos por usuário", e);
-        }
-
-        return orders;
-    }
-
-    public Order getById(int id) {
-        return get(id);
-    }
-
-    public Order findById(int id) {
-        return get(id);
-    }
-
-    public List<Order> findAll() {
-        return list();
-    }
-
-    public List<Order> find() {
-        return list();
-    }
-
-    public Order updateOrder(Order order) {
-        order.setUpdatedAt(new Date());
-        return update(order);
     }
 
     private Order mapResultSetToOrder(ResultSet rs) throws SQLException {

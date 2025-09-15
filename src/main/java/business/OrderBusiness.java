@@ -224,10 +224,6 @@ public class OrderBusiness {
         }
     }
 
-    public List<Order> getAllOrders() {
-        return orderRepository.list();
-    }
-
     public controller.OrderHttpController.CleanOrderResponse getOrderDetailsById(int orderId) {
         try {
             // Get the order

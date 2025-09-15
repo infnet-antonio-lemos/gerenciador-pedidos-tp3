@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 
 public class AddressHttpController {
-    private AddressBusiness addressBusiness;
-    private ObjectMapper objectMapper;
+    private final AddressBusiness addressBusiness;
+    private final ObjectMapper objectMapper;
 
     public AddressHttpController(AddressBusiness addressBusiness) {
         this.addressBusiness = addressBusiness;

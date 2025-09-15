@@ -116,44 +116,6 @@ public class UserRepositorySQLite implements RepositoryInterface<User> {
         }
     }
 
-    // Additional methods for compatibility with existing code
-    public User findByEmail(String email) {
-        String sql = "SELECT * FROM users WHERE email = ?";
-
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, email);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSetToUser(rs);
-                }
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao buscar usuário por email", e);
-        }
-
-        return null;
-    }
-
-    public User findById(int id) {
-        return get(id);
-    }
-
-    public List<User> findAll() {
-        return list();
-    }
-
-    public void save(User user) {
-        if (user.getId() == 0) {
-            create(user);
-        } else {
-            update(user);
-        }
-    }
-
     private User mapResultSetToUser(ResultSet rs) throws SQLException {
         return new User(
             rs.getInt("id"),

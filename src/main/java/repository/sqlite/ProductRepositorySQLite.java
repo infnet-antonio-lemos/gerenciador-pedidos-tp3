@@ -91,11 +91,6 @@ public class ProductRepositorySQLite implements RepositoryInterface<Product> {
         }
     }
 
-    // Additional methods for compatibility with existing code
-    public List<Product> findAll() {
-        return findAll(false);
-    }
-
     public List<Product> findAll(boolean includeDeleted) {
         String sql = "SELECT * FROM products";
         if (!includeDeleted) {
@@ -117,10 +112,6 @@ public class ProductRepositorySQLite implements RepositoryInterface<Product> {
         }
 
         return products;
-    }
-
-    public Product findById(int id) {
-        return findById(id, false);
     }
 
     public Product findById(int id, boolean includeDeleted) {
@@ -145,32 +136,6 @@ public class ProductRepositorySQLite implements RepositoryInterface<Product> {
         }
 
         return null;
-    }
-
-    public void save(Product product) {
-        if (product.getId() == 0) {
-            create(product);
-        } else {
-            update(product);
-        }
-    }
-
-    public int getNextId() {
-        String sql = "SELECT MAX(id) + 1 as next_id FROM products";
-
-        try (Connection conn = DatabaseManager.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-
-            if (rs.next()) {
-                return rs.getInt("next_id");
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao obter próximo ID", e);
-        }
-
-        return 1;
     }
 
     private Product mapResultSetToProduct(ResultSet rs) throws SQLException {

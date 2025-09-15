@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import auth.SimpleTokenManager;
 
 public class AuthHttpController {
-    private AuthBusiness authBusiness;
-    private ObjectMapper objectMapper;
+    private final AuthBusiness authBusiness;
+    private final ObjectMapper objectMapper;
 
     public AuthHttpController(AuthBusiness authBusiness) {
         this.authBusiness = authBusiness;

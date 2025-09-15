@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 
 public class ProductHttpController {
-    private ProductBusiness productBusiness;
-    private ObjectMapper objectMapper;
+    private final ProductBusiness productBusiness;
+    private final ObjectMapper objectMapper;
 
     public ProductHttpController(ProductBusiness productBusiness) {
         this.productBusiness = productBusiness;
